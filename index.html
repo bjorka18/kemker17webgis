@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<title>WebGIS Ketelitian Peta Desa Sidodadi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+</head><body>
+<div class="app">
+<header><div class="logo">⌖</div>
+<div><h1>Dashboard Ketelitian Horizontal Peta Dasar</h1><p>KELOMPOK 17 · Teknik Geomatika ITERA</p></div>
+<nav class="tabs"><a class="tab on" href="index.html">🗺️ Peta</a><a class="tab" href="tim.html">👥 Tim Kami</a></nav></header>
+
+<div class="wrap" id="vMap">
+<aside>
+<div class="step"><h2><i>1</i>Pilih tampilan peta</h2>
+<select id="base"><option value="sat">Citra satelit (Esri)</option><option value="grid">Kertas grid teknik</option></select></div>
+<div class="step"><h2><i>2</i>Ortofoto drone</h2>
+<p class="hint">Ortofoto dimuat otomatis dari folder <code>ortho/</code>. Di sini Anda cukup mengatur tampil/sembunyi dan transparansinya.</p>
+<div class="chk"><input type="checkbox" id="tO" checked>Tampilkan ortofoto</div>
+<label class="hint">Transparansi ortofoto (kiri = transparan, kanan = pekat)</label><input type="range" id="orthoOp" min="0" max="100" value="100" style="width:100%">
+<p class="hint" id="orthoMsg">Memeriksa folder ortho/ …</p></div>
+<div class="step"><h2><i>3</i>Tutupan lahan Sidodadi</h2>
+<p class="hint">Centang untuk menampilkan atau menyembunyikan, klik objek di peta untuk melihat atributnya. Geser slider di bawah tiap layer untuk mengatur transparansinya.</p>
+<div id="lcList"></div>
+<label class="hint">Semua layer sekaligus (kiri = transparan, kanan = pekat)</label><input type="range" id="lcOp" min="0" max="100" value="55" style="width:100%"></div>
+<div class="step"><h2><i>4</i>Skala peta</h2>
+<select id="scale"><option value="1000">1 : 1.000 (sangat detail)</option><option value="2500">1 : 2.500</option><option value="5000">1 : 5.000</option></select>
+<p class="hint">Makin besar skala, makin ketat batas kesalahan yang diizinkan.</p></div>
+<div class="step"><h2><i>5</i>Tampilkan / sembunyikan</h2>
+<div class="chk"><input type="checkbox" id="tG" checked><span class="dot" style="background:#f59e0b"></span>Titik kontrol (GCP)</div>
+<div class="chk"><input type="checkbox" id="tI" checked><span class="dot" style="background:#22c55e"></span>Titik uji (ICP)</div>
+<div class="chk"><input type="checkbox" id="tL">Nama titik</div></div>
+<div class="step"><h2>🛰️ Data akuisisi (laporan Metashape)</h2><table class="mini"><tr><td>Jumlah foto</td><td>5.108</td></tr><tr><td>Tinggi terbang</td><td>167 m</td></tr><tr><td>GSD / ortofoto</td><td>4,29 / 4,50 cm</td></tr><tr><td>Luas liputan</td><td>12,1 km²</td></tr><tr><td>RMSE titik kontrol (XY)</td><td>0,58 cm</td></tr><tr><td>RMSE titik uji (XY)</td><td>1,11 cm</td></tr></table></div>
+<div class="step"><h2>📊 Kesalahan tiap titik uji</h2><div id="bars" class="hint">–</div></div>
+</aside>
+<div class="mid">
+<div id="verdict" class="verdict"></div>
+<div class="stats">
+<div class="card"><div class="k">Titik kontrol</div><div class="v" id="sG">0</div><small>GCP</small></div>
+<div class="card"><div class="k">Titik uji</div><div class="v" id="sI">0</div><small>ICP</small></div>
+<div class="card"><div class="k">Meleset arah X</div><div class="v" id="sX">–</div><small>RMSE X (cm)</small></div>
+<div class="card"><div class="k">Meleset arah Y</div><div class="v" id="sY">–</div><small>RMSE Y (cm)</small></div>
+<div class="card"><div class="k">Rata-rata meleset</div><div class="v" id="sR">–</div><small>RMSE r (cm)</small></div>
+<div class="card"><div class="k">Batas 90% titik</div><div class="v" id="sC">–</div><small>CE90 (cm)</small></div>
+<div class="card"><div class="k">Nilai akhir</div><div class="v" id="sK">–</div><small>Kelas 1 terbaik</small></div>
+</div>
+<div class="mapbox"><div id="map"></div>
+<div id="zoom" class="ov"><button id="zi">+</button><button id="zo">−</button><button id="zf" title="Zoom ke data">⌖</button></div>
+<div id="attr" class="ov">Citra: Esri World Imagery</div><div id="cur" class="ov">Arahkan kursor ke peta</div>
+<div class="legend ov"><b>Keterangan</b><div><span class="dot" style="background:#f59e0b"></span>Titik kontrol (GCP)</div><div><span class="dot" style="background:#22c55e"></span>Titik uji (ICP)</div><div><span class="dot" style="background:#fff;border:3px solid #dc2626"></span>Melebihi batas</div><small>Klik titik untuk detail</small></div>
+<div id="info" class="ov"><button id="x">✕</button><div id="ib"></div></div>
+</div></div></div>
+
+</div>
+<script src="ortho/config.js"></script>
+<script src="data/data.js"></script>
+<script src="data/tutupan.js"></script>
+<script src="app.js"></script>
+</body></html>

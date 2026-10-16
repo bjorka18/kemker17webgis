@@ -1,0 +1,15 @@
+FOLDER ORTOFOTO
+===============
+Taruh tile XYZ hasil konversi ortofoto di sini, strukturnya:
+
+  ortho/14/...   ortho/15/...   ...   ortho/20/{x}/{y}.jpg
+
+Cara membuat tile dari .ecw:
+1. QGIS: buka .ecw -> Processing Toolbox -> "Generate XYZ tiles (Directory)"
+   Extent = layer ortho, Min zoom 14, Max zoom 20, format JPG (kualitas 85),
+   lalu pilih folder output = folder "ortho" ini.
+   (Atau: gdal2tiles.py --xyz -z 14-20 -w none --processes=4 Ortho.ecw ortho)
+2. Jika format/zoom berbeda, ubah ortho/config.js.
+
+Tidak perlu upload apa pun di WebGIS: ortofoto otomatis tampil.
+Catatan: jika WebGIS di-hosting (GitHub Pages/Netlify/dll), folder ortho ikut di-upload.

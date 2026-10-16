@@ -1,0 +1,1 @@
+Taruh foto anggota di sini: anggota1.jpg ... anggota5.jpg (nama file bisa diubah di team.js)
